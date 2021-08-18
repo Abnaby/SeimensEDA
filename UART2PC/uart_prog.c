@@ -11,8 +11,8 @@
 #include "uart_private.h"
 #include "uart_config.h"
 
-#define WAIT_TO_TRANSMIT   (GET_BIT(UART0FR,5) != 0)
-#define WAIT_TO_RECEIVE    (GET_BIT(UART0FR,4) != 0)
+#define WAIT_TO_TRANSMIT   (GET_BIT(UART0FR,5) == 0)
+#define WAIT_TO_RECEIVE    (GET_BIT(UART0FR,4) == 0)
 static void (*Callback_RX_UART0) (u8) = NULL ;
 static void (*Callback_TX_UART0) (void) = NULL ;
 static volatile u8 Global_u8Data ; 
