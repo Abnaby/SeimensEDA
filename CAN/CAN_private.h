@@ -1,9 +1,8 @@
 /*********************************************************************************/
 /* Author    : Mohamed Abd El-Naby                                               */
 /* Version   : V01                                                               */
-/* Date      : 29 August 2020                                                    */
+/* Date      : 11 September 2020                                                   */
 /*********************************************************************************/
-
 
 
 #ifndef CAN_PRIVATE_H
@@ -12,6 +11,7 @@
 typedef struct{
 	volatile u32 CANCTL ;
 	volatile u32 CANSTS ;
+	volatile u32 CANERR ;
 	volatile u32 CANBIT ;
 	volatile u32 CANINT ;
 	volatile u32 CANTST ;
@@ -199,7 +199,16 @@ typedef struct{
 #define CAN_STS_LEC_BIT0        0x00000005  // Bit 0 Error
 #define CAN_STS_LEC_CRC         0x00000006  // CRC Error
 #define CAN_STS_LEC_NOEVENT     0x00000007  // No Event
-
+//*****************************************************************************
+//
+// The following are defines for the bit fields in the CAN_O_ERR register.
+//
+//*****************************************************************************
+#define CAN_ERR_RP              15			  // Received Error Passive
+#define CAN_ERR_REC_M           0x00007F00  // Receive Error Counter
+#define CAN_ERR_TEC_M           0x000000FF  // Transmit Error Counter
+#define CAN_ERR_REC_S           8
+#define CAN_ERR_TEC_S           0
 /*		Equations		*/
 	
 #define BRP_RANGE_CHECK(BRP_VALUE)	(BRP_VALUE>= 0x00 && BRP_VALUE <= 0x03F)

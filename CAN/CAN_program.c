@@ -1,7 +1,7 @@
 /*********************************************************************************/
 /* Author    : Mohamed Abd El-Naby                                               */
 /* Version   : V01                                                               */
-/* Date      : 2 September 2020                                                   */
+/* Date      : 11 September 2020                                                   */
 /*********************************************************************************/
 #include "STD_TYPES.h"
 #include "BIT_MATH.h"
@@ -376,8 +376,15 @@ static u8 CAN_u8MessageObjectConfig(u8 TX_RX_RM , CAN_MassegeObject *psMsgObject
 		case TX_REMOTE : 
 			/*	Set the TXRQST bit	*/
 			SET_BIT(*copy_u16MCTL , CAN_IF1MCTL_TXRQST) ;
+			/*	Waiting Data So I'm Reciever */
+			CLR_BIT(*copy_u16ArbReg2 , CAN_IF1ARB2_DIR ) ;
 			break ; 
-		case RX_REMOTE : break ; 
+		case RX_REMOTE : 
+			/*	CLR the TXRQST bit	*/
+			CLR_BIT(*copy_u16MCTL , CAN_IF1MCTL_TXRQST) ;
+			/* So I'm Transmitter */
+			SET_BIT(*copy_u16ArbReg2 , CAN_IF1ARB2_DIR ) ;		
+			break ; 
 	}
 
 	// Set Extended Filter
@@ -698,7 +705,30 @@ static void CAN_voidMessageAsyncObjectConfig(u8 Tx_RX ,u16 *copy_u16MCTL )
 
 
 
+u8 CAN_u8ErrorCounterGet (CAN_channel channelNumber , u8 *p_u8TX_Count, u8 *p_u8RX_Count)
+{
+	u32 Local_u32RegErrorVal = 0 ; 
+	switch(channelNumber)
+	{
+		case CAN0 : 
+			Local_u32RegErrorVal = CAN0_Chennal->CANERR ; 
+		break ; 
+		case CAN1 : 
+			Local_u32RegErrorVal = CAN1_Chennal->CANERR ; 
 
+		break ; 
+	}
+	*p_u8RX_Count = (Local_u32RegErrorVal & CAN_ERR_REC_M) >> CAN_ERR_REC_S ; 
+	*p_u8TX_Count = (Local_u32RegErrorVal & CAN_ERR_TEC_M) >> CAN_ERR_TEC_S ; 
+	if(GET_BIT(Local_u32RegErrorVal,CAN_ERR_RP))
+	{
+		return 1 ; 
+	}
+	else
+	{
+		return 0; 
+	}
+}
 void __vector_39(void)
 {	
 	if(global_u8TX_RX_State == 1 )

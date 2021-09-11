@@ -1,7 +1,7 @@
 /*********************************************************************************/
 /* Author    : Mohamed Abd El-Naby                                               */
 /* Version   : V01                                                               */
-/* Date      : 29 August 2020                                                    */
+/* Date      : 11 September 2020                                                   */
 /*********************************************************************************/
 
 #ifndef CAN_INTERFACE_H
@@ -66,4 +66,5 @@ u8 CAN_u8TransmitMessageObjectSync(CAN_channel channelNumber,u32 copy_u32ObjID ,
 u8 CAN_u8TransmitMessageObjectAsync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues,void(*callBack)(void));
 u8 CAN_u8RecieveMessageObjectAsync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues,void(*callBack)(void));
 u8 CAN_u8RecieveMessageObjectSync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues);
+u8 CAN_u8ErrorCounterGet (CAN_channel channelNumber , u8 *p_u8TX_Count, u8 *p_u8RX_Count);
 #endif
