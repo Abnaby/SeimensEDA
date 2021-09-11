@@ -39,6 +39,7 @@ typedef enum
 	Enable_FIFO,
 	Disable_FIFO
 }FIFO_Mode ;
+
 typedef struct 
 {
 	// The CAN message identifier used for 11 or 29 bit identifiers.
@@ -61,9 +62,8 @@ typedef struct
 void CAN_voidInit(CAN_channel channelNumber,CAN_Mode WorkingMode,BitTiming_Parameter *BitRateParameter);
 void CAN_voidInterruptEnable(CAN_channel channelNumber , Interrupt_Type copy_IntType) ; 
 void CAN_voidInterruptDisable(CAN_channel channelNumber , Interrupt_Type copy_IntType) ; 
-void CAN_Config_TransmitMessageObject(CAN_channel channelNumber,CAN_MassegeObject *psMsgObject);
-void CAN_voidDataHandling(u8 *pu8Data, u32 *pu32Register, u32 ui32Size);
-
-
-
+u8 CAN_u8TransmitMessageObjectSync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues);
+u8 CAN_u8TransmitMessageObjectAsync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues,void(*callBack)(void));
+u8 CAN_u8RecieveMessageObjectAsync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues,void(*callBack)(void));
+u8 CAN_u8RecieveMessageObjectSync(CAN_channel channelNumber,u32 copy_u32ObjID , CAN_MassegeObject *psMsgObject , FIFO_Mode copy_FIFOStatues);
 #endif

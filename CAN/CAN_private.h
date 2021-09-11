@@ -56,6 +56,10 @@ typedef struct{
 /******************************************************************************
 * Configuration Constants
 *******************************************************************************/
+#define TX	0
+#define TX_REMOTE	1
+#define RX	3
+#define RX_REMOTE	4
 //*****************************************************************************
 //
 // This is the maximum number that can be stored as an 11bit Message
@@ -89,6 +93,7 @@ typedef struct{
 //
 //*****************************************************************************
 #define CAN_IF1CRQ_BUSY         15				  // Busy Flag
+#define CAN_IF1CRQ_MNUM_M       0x0000003F 		 // Message Number
 //*****************************************************************************
 //
 // The following are defines for the bit fields in the CAN_O_IF1CMSK register.
@@ -175,18 +180,47 @@ typedef struct{
 #define CAN_IF1ARB1_ID_M        0x0000FFFF  // Message Identifier
 #define CAN_IF1ARB1_ID_S        0
 
+//*****************************************************************************
+//
+// The following are defines for the bit fields in the CAN_O_STS register.
+//
+//*****************************************************************************
+#define CAN_STS_BOFF            7  // Bus-Off Status
+#define CAN_STS_EWARN           6  // Warning Status
+#define CAN_STS_EPASS           5  // Error Passive
+#define CAN_STS_RXOK            4  // Received a Message Successfully
+#define CAN_STS_TXOK            3  // Transmitted a Message Successfully
+#define CAN_STS_LEC_M           0x00000007  // Last Error Code
+#define CAN_STS_LEC_NONE        0x00000000  // No Error
+#define CAN_STS_LEC_STUFF       0x00000001  // Stuff Error
+#define CAN_STS_LEC_FORM        0x00000002  // Format Error
+#define CAN_STS_LEC_ACK         0x00000003  // ACK Error
+#define CAN_STS_LEC_BIT1        0x00000004  // Bit 1 Error
+#define CAN_STS_LEC_BIT0        0x00000005  // Bit 0 Error
+#define CAN_STS_LEC_CRC         0x00000006  // CRC Error
+#define CAN_STS_LEC_NOEVENT     0x00000007  // No Event
+
 /*		Equations		*/
 	
 #define BRP_RANGE_CHECK(BRP_VALUE)	(BRP_VALUE>= 0x00 && BRP_VALUE <= 0x03F)
 #define SJW_RANGE_CHECK(SJW_VALUE)	(SJW_VALUE>= 0x00 && SJW_VALUE <= 0x03)
 #define TSEG1_RANGE_CHECK(TSEG1_VALUE)	(TSEG1_VALUE>= 0x00 && TSEG1_VALUE <= 0x0F)
 #define TSEG2_RANGE_CHECK(TSEG2_VALUE)	(TSEG2_VALUE>= 0x00 && TSEG2_VALUE <= 0x07)
+#define WAIT_BUS_BE_UNBUSY(CAN_IF2CRQ_Reg)					while((GET_BIT(CAN_IF2CRQ_Reg,CAN_IF1CRQ_BUSY)) == 1)
+#define SUCCESSFUL_MSG_OBJ_TRANSMISSION(CAN_CHENNAL_CANNWDA1_REG)	(GET_BIT(CAN_CHENNAL_CANNWDA1_REG , 0) == 0)
+#define NEW_DATA_AVAILABE(CAN_CHENNAL_MCTL_REG)   ((GET_BIT(CAN_CHENNAL_MCTL_REG , CAN_IF1MCTL_NEWDAT)) == 1)
+
+#define CHECK_DLC_IN_RANGE(value)	(value >= 0x0 && value <= 0xF)
+#define LOST_SOME_DATA(REG)			(GET_BIT(REG,CAN_IF1MCTL_MSGLST) == 1 ) 
 		
 /*  private fn  */
-static u8
-CAN_u8TransmitMessageObjectConfig(CAN_MassegeObject *psMsgObject ,FIFO_Mode copy_FIFOStatues , u16 *local_u16CMSK ,u16 *copy_u16ArbReg1 , u16 *copy_u16ArbReg2, u16 *copy_u16MCTL,u16 *copy_u16MskReg1, u16 *copy_u16MskReg2 , u32 copy_u32ObjID );
-static void CAN_voidDataHandling(u8 *pu8Data, u32 *pu32Register, u32 ui32Size);
-
-
+static u8 CAN_u8MessageObjectConfig(u8 TX_RX_RM , CAN_MassegeObject *psMsgObject ,FIFO_Mode copy_FIFOStatues , u16 *local_u16CMSK ,u16 *copy_u16ArbReg1 , u16 *copy_u16ArbReg2, u16 *copy_u16MCTL,u16 *copy_u16MskReg1, u16 *copy_u16MskReg2 , u32 copy_u32ObjID );
+static void CAN_voidMessageAsyncObjectConfig(u8 Tx_RX ,u16 *copy_u16MCTL );
+static void CAN_voidReadDataHandling(u8 *pui8Data, u32 *pui32Register, u32 ui32Size);
+static u8 CAN_u8RecieveMessageObjectConfig(CAN_channel channelNumber, CAN_MassegeObject *psMsgObject , u32 copy_u32ObjID );
+static void CAN_voidWriteDataHandling(u8 *pu8Data, u32 *pu32Register, u32 ui32Size);
+/*	IRQs	*/
+ void __vector_39(void) __attribute__(( signal , used ));	//CAN0
+ void __vector_40(void) __attribute__(( signal , used ));	//CAN1
 
 #endif
