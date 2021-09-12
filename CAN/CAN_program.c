@@ -1,7 +1,7 @@
 /*********************************************************************************/
 /* Author    : Mohamed Abd El-Naby                                               */
-/* Version   : V01                                                               */
-/* Date      : 11 September 2020                                                   */
+/* Version   : V01.1                                                              */
+/* Date      : 12 September 2020                                                   */
 /*********************************************************************************/
 #include "STD_TYPES.h"
 #include "BIT_MATH.h"
@@ -206,7 +206,7 @@ void CAN_voidInterruptDisable(CAN_channel channelNumber , Interrupt_Type copy_In
 			switch(copy_IntType)
 			{
 				case Status_Interrupt : CLR_BIT(CAN1_Chennal -> CANCTL , CAN_CTL_SIE); break ; 
-				case Error_Interrupt : CLE_BIT(CAN1_Chennal -> CANCTL , CAN_CTL_EIE); break ;
+				case Error_Interrupt : CLR_BIT(CAN1_Chennal -> CANCTL , CAN_CTL_EIE); break ;
 				case All_Interrupts : 
 					/*	Disable Global Interrupt 	*/
 					DISABLE_GLOBAL_INT(CAN1_Chennal -> CANCTL);
@@ -274,7 +274,7 @@ u8 CAN_u8TransmitMessageObjectAsync(CAN_channel channelNumber,u32 copy_u32ObjID 
     u16 local_u16CMSK = 0 ;
 	u16 local_u16ArbReg1 = 0 , local_u16ArbReg2 = 0, local_u16MCTL = 0,local_u16MskReg1 = 0,local_u16MskReg2 = 0;
 	/*	GET REG VALUES FOR THIS CONFIGURATION	*/
-	local_u8ErrorState = CAN_u8TransmitMessageObjectConfig(&psMsgObject ,copy_FIFOStatues , local_u16CMSK , local_u16ArbReg1,local_u16ArbReg2,local_u16MCTL,local_u16MskReg1,local_u16MskReg2,copy_u32ObjID) ;
+	local_u8ErrorState = CAN_u8MessageObjectConfig(TX,&psMsgObject ,copy_FIFOStatues , local_u16CMSK , local_u16ArbReg1,local_u16ArbReg2,local_u16MCTL,local_u16MskReg1,local_u16MskReg2,copy_u32ObjID) ;
 	/*	SET Async Fn	*/
 	CAN_voidMessageAsyncObjectConfig(1 ,&local_u16MCTL ) ; 
 	/*	Check ERROR	*/
